@@ -1,0 +1,15 @@
+{% extends "movies/base.html" %}
+
+{% block movie %}
+    {% for movie in movie_list %}
+
+    <img src="{{ movie.poster.url }}" alt="">    
+    <br>
+    <h4>
+        <a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a>
+    </h4>
+    <br>
+    <span>{{ movie.tagline }}</span>
+
+    {% endfor %}
+{% endblock movie %}

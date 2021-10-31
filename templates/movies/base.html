@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    {% block container %}
+        <div>Container</div>
+    {% endblock container %}
+
+
+    {% include "include/sidebar.html" %}
+    {% block movie %}
+    {% endblock movie %}
+{% endblock content %}
