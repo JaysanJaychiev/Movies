@@ -87,6 +87,9 @@ class Movie(models.Model):
         from django.urls import reverse
         return reverse("movie_detail", kwargs={"slug": self.url})
     
+    def get_review(self):
+        return self.reviews_set.filter(parent__isnull=True)
+
     class Meta:
         verbose_name = "Фильм"
         verbose_name_plural = "Фильмы"

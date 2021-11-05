@@ -43,6 +43,8 @@
         <li><span><b>Сборы в США:</b>{{ movie.fees_in_usa }}</span></li>
         <li><span><b>Сборы в мире:</b>{{ movie.fees_in_world }}</span></li>
     </ul>
+
+
     <h3>О фильме {{ movie.title }}</h3>
     <p>
         {% for image in movie.movieshots_set.all %}
@@ -51,7 +53,72 @@
     </p>
     <p>{{ movie.description }}</p>
 
+
+
     <div>
         <img src="{{ movie.poster.url }}" alt="">
     </div>
+
+    <br>
+
+    <!-- Число коментариев -->
+    <h6><span>Коментариев {{ movie.reviews_set.count }}</span><br>Оствить отзыв</h6>
+    <!-- Форма для отзывов -->
+    <form action="{% url 'add_review' movie.id %}" method="post" id="formReview">
+        {% csrf_token %}
+        <input type="hidden" name="parent" id="contactparent" value="">
+        <div>
+            <label for="contactcomment">Ваш коментарий *</label><br>
+            <textarea name="text" id="contactcomment"></textarea>
+        </div>
+        <div>
+            <label for="contactusername">Имя *</label>
+            <input type="text" name="name">
+        </div>
+        <div>
+            <label for="contactemail">Email *</label>
+            <input type="email" name="email">
+        </div>
+        <button type="submit">Отправить</button>
+    </form><br><br>
+
+    <div class="otzyv">
+        <!-- Отзывы -->
+        {% for review in movie.get_review %}
+            <img src="{% static 'movies/images/avatar.png' %}" alt="image" width="180px">
+            <h4>
+                Пользователь: {{ review.name }}
+            </h4>
+            <p>{{ review.text }}</p>
+
+            <a href="#formReview" onclick="addReview('{{ review.name }}', '{{ review.id }}')">Ответить</a>
+
+
+            <!-- вложенные отзывы -->
+            <div class="reviews_child">
+                {% for rew in review.reviews_set.all %}
+                    <a href="#">
+                        <img src="{% static 'movies/images/avatar.png' %}" alt="image" width="180px">
+                    </a>
+
+                    <div>
+                        <h5>{{ rew.name }}</h5>
+                        <p>{{ rew.text }}</p>
+                    </div>
+
+                {% endfor %}
+            </div>
+
+        {% endfor %}
+    </div>
+
+    <!-- привязка по имени и id -->
+    <script>
+        function addReview(name, id) {
+            document.getElementById("contactparent").value = id;
+            document.getElementById("contactcomment").innerText = `${name}, `
+        }
+    </script>
+
+
 {% endblock movie %}
