@@ -51,7 +51,7 @@
             <img class="img-movie-shots" src="{{ image.image.url }}" alt="{{ image.description }}">
         {% endfor %}
     </p>
-    <p>{{ movie.description }}</p>
+    <p><strong>{{ movie.description|safe }}</strong></p>
 
 
 
