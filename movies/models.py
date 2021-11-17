@@ -2,6 +2,8 @@ from typing import Reversible
 from django.db import models
 from datetime import date
 
+from django.urls import reverse
+
 from django.db.models.fields.related import ForeignKey
 
 
@@ -32,6 +34,9 @@ class Actor(models.Model):
     def __str__(self):
         return self.name
 
+
+    def get_absolute_url(self):
+        return reverse('actor_detail', kwargs={"slug": self.name})
 
     class Meta:
         verbose_name = 'Aктеры и режиссеры'
@@ -84,7 +89,6 @@ class Movie(models.Model):
 
 
     def get_absolute_url(self):
-        from django.urls import reverse
         return reverse("movie_detail", kwargs={"slug": self.url})
     
     def get_review(self):
@@ -118,11 +122,12 @@ class RatingStar(models.Model):
 
 
     def __str__(self):
-        return self.value
+        return f"{self.value}"
 
     class Meta:
         verbose_name = "Звезда рейтинга"
         verbose_name_plural = "Звезда рейтинга"
+        ordering = ['-value']
 
 
 class Rating(models.Model):
