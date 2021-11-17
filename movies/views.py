@@ -1,4 +1,5 @@
 from django import template
+from django.http import request
 # from django.http import request
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -26,6 +27,8 @@ class MoviesView(GenreYear, ListView):
     """Список фильмов"""
     model = Movie
     queryset = Movie.objects.filter(draft=False)
+    paginate_by = 1
+
 
 
 
@@ -65,11 +68,23 @@ class ActorView(GenreYear, DetailView):
 
 class FilterMoviesView(GenreYear, ListView):
     """Фильтр фильмов"""
+
+    paginate_by = 2
+
     def get_queryset(self):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist('year')) |
-            Q(genres__in=self.request.GET.getlist("genre")))
+            Q(genres__in=self.request.GET.getlist("genre"))
+        ).distinct()
         return queryset
+
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["year"] = ''.join([f"year={x}&" for x in self.request.GET.getlist('year')])
+        context["genre"] = ''.join([f"genre={x}&" for x in self.request.GET.getlist('genre')])
+        return context
+
 
     
 
@@ -125,3 +140,19 @@ class AddStarRating(View):
             return HttpResponse(status=400)
             # если форма не валидна статус 400
 
+class Search(ListView):
+    """Поиск фильмов"""
+
+    paginate_by = 2
+
+    def get_queryset(self):
+        return Movie.objects.filter(title__icontains=self.request.GET.get("q"))
+        # icontains не учитывает регистр
+        
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["q"] = f'q={self.request.GET.get("q")}&'
+        # context - это словарь и сравниваем с GET запросом
+        return context
+ 
+    
